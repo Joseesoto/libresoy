@@ -148,5 +148,5 @@ else:
 # ------------------------
 # Mostrar tabla completa (hasta 200 filas)
 # ------------------------
-st.markdown("### Vista completa de datos:")
+
 st.dataframe(df.head(200), use_container_width=True)
