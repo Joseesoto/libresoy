@@ -9,7 +9,11 @@ st.markdown("<h2 style='text-align: center;'>LibreSoy - Tabla SPOT</h2>", unsafe
 # Obtener y preparar datos
 # ------------------------
 df = get_mock_data()
+df.columns = df.columns.str.lower().str.strip()  # Normaliza columnas
 
+st.write("🔍 Verificando estructura del DataFrame...")
+st.write("Columnas:", df.columns.tolist())
+st.write("Número de filas:", len(df))
 
 if df.empty:
     st.error("❌ El DataFrame está vacío. Revisa los módulos de los exchanges.")
@@ -20,16 +24,6 @@ missing = required_cols - set(df.columns)
 
 if missing:
     st.error(f"❌ Faltan columnas: {', '.join(missing)}")
-    st.stop()
-
-# Validar columnas antes de crear 'pair'
-required_cols = {"base", "quote"}
-missing = required_cols - set(df.columns)
-
-if not missing:
-    df["pair"] = df["base"] + "/" + df["quote"]
-else:
-    st.error(f"❌ Faltan las columnas necesarias: {', '.join(missing)}. Revisa la función get_mock_data().")
     st.stop()
 
 df["pair"] = df["base"] + "/" + df["quote"]
@@ -44,7 +38,7 @@ with st.sidebar:
     base_opts = sorted(set(df["base"].unique()) | set(df["quote"].unique()))
     quote_opts = sorted(df["quote"].unique())
 
-    selected_exchanges = st.multiselect("exchange", exchange_opts, default=exchange_opts)
+    selected_exchanges = st.multiselect("Exchange", exchange_opts, default=exchange_opts)
     selected_base = st.selectbox("Base", ["Todos"] + base_opts)
     selected_quotes = st.multiselect("Quote", quote_opts, default=quote_opts)
     decimales = st.slider("Decimales a mostrar", min_value=2, max_value=6, value=4)
@@ -115,28 +109,35 @@ else:
                     <span style='font-size:16px;'><b>Spread:</b> {s["spread"]:.2f}%</span>
                 </div>
                 <div style='margin-top:10px; display: flex; gap: 12px; flex-wrap: wrap;'>
-                    <a href="{s["buy_link"]}" target="_blank" style='flex: 0 0 auto; color:white; background-color:#218838; padding:6px 16px; border-radius:5px; text-decoration:none; font-weight:600;'>
+                    <a href="{s["buy_link"]}" target="_blank" style='flex: 0 0 auto; color:white; background-color:#b30000; padding:6px 16px; border-radius:5px; text-decoration:none; font-weight:600;'>
                         Comprar en {s["buy_exchange"]} @ {s["buy_price"]:.{decimales}f}
                     </a>
-                    <a href="{s["sell_link"]}" target="_blank" style='flex: 0 0 auto; color:white; background-color:#c82333; padding:6px 16px; border-radius:5px; text-decoration:none; font-weight:600;'>
+                    <a href="{s["sell_link"]}" target="_blank" style='flex: 0 0 auto; color:white; background-color:#006400; padding:6px 16px; border-radius:5px; text-decoration:none; font-weight:600;'>
                         Vender en {s["sell_exchange"]} @ {s["sell_price"]:.{decimales}f}
                     </a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
 
+        # Estilos condicionales en tabla
+        best_ask = s["group"]["ask"].min()
+        best_bid = s["group"]["bid"].max()
+
         display_df = s["group"].copy()
-        display_df.columns = ["exchange", "Precio Venta (Bid)", "Precio Compra (Ask)", "Link"]
+        display_df.columns = ["exchange", "bid", "ask", "link"]
 
-        # Formatear precios con decimales
-        display_df["Precio Venta (Bid)"] = display_df["Precio Venta (Bid)"].apply(lambda x: f"<span style='color:#006400; font-weight:bold'>{x:.{decimales}f}</span>")
-        display_df["Precio Compra (Ask)"] = display_df["Precio Compra (Ask)"].apply(lambda x: f"<span style='color:#b30000; font-weight:bold'>{x:.{decimales}f}</span>")
+        display_df["bid"] = display_df["bid"].apply(
+            lambda x: f"<span style='color:#006400; font-weight:bold'>{x:.{decimales}f}</span>" if x == best_bid else f"{x:.{decimales}f}"
+        )
+        display_df["ask"] = display_df["ask"].apply(
+            lambda x: f"<span style='color:#b30000; font-weight:bold'>{x:.{decimales}f}</span>" if x == best_ask else f"{x:.{decimales}f}"
+        )
 
-        # Convertir nombre de exchange en un enlace
-        display_df["exchange"] = display_df.apply(lambda row: f"<a href='{row['Link']}' target='_blank'>{row['exchange']}</a>", axis=1)
-        display_df = display_df.drop(columns=["Link"])
+        display_df["exchange"] = display_df.apply(
+            lambda row: f"<a href='{row['link']}' target='_blank'>{row['exchange']}</a>", axis=1
+        )
+        display_df = display_df.drop(columns=["link"])
 
-        # Mostrar tabla alineada con botones
         st.markdown(
             f"""
             <div style='margin-top:-10px; max-width: 900px;'>
@@ -145,3 +146,9 @@ else:
             """,
             unsafe_allow_html=True
         )
+
+# ------------------------
+# Mostrar tabla completa (hasta 200 filas)
+# ------------------------
+st.markdown("### Vista completa de datos:")
+st.dataframe(df.head(200), use_container_width=True)
