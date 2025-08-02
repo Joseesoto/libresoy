@@ -8,5 +8,5 @@ def get_data():
         bid = round(np.random.uniform(100, 30000), 2)
         ask = round(bid + np.random.uniform(0.1, 1.5), 2)
         link = f"https://www.bybit.com/trade/usdt/{base}{quote}"
-        data.append(["Bybit", base, quote, f"{base}/{quote}", bid, ask, link])
-    return pd.DataFrame(data, columns=["Exchange", "Base", "Quote", "Pair", "Bid", "Ask", "Link"])
+        data.append(["bybit", base, quote, bid, ask, link])
+    return pd.DataFrame(data, columns=["exchange", "base", "quote", "bid", "ask", "link"])
