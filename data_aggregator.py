@@ -1,6 +1,3 @@
-import pandas as pd
-from exchanges import binance, kucoin, bybit, bitget
-
 def get_mock_data():
     sources = {
         "Binance": binance.get_data(),
@@ -13,7 +10,7 @@ def get_mock_data():
 
     for name, df in sources.items():
         if isinstance(df, pd.DataFrame):
-            required_cols = {"base", "quote", "bid", "ask", "Exchange", "link"}
+            required_cols = {"base", "quote", "bid", "ask", "exchange", "link"}
             if required_cols.issubset(df.columns):
                 valid_dfs.append(df)
             else:
@@ -22,6 +19,6 @@ def get_mock_data():
             print(f"⚠️ {name} omitido: no devolvió un DataFrame válido")
 
     if not valid_dfs:
-        return pd.DataFrame(columns=["base", "quote", "bid", "ask", "Exchange", "link"])
+        return pd.DataFrame(columns=list(required_cols))
 
     return pd.concat(valid_dfs, ignore_index=True)
