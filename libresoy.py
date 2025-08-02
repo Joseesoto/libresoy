@@ -42,17 +42,17 @@ df["pair"] = df["base"] + "/" + df["quote"]
 with st.sidebar:
     st.markdown("## Filtros")
 
-    exchange_opts = sorted(df["Exchange"].unique())
+    exchange_opts = sorted(df["exchange"].unique())
     base_opts = sorted(set(df["base"].unique()) | set(df["quote"].unique()))
     quote_opts = sorted(df["quote"].unique())
 
-    selected_exchanges = st.multiselect("Exchange", exchange_opts, default=exchange_opts)
+    selected_exchanges = st.multiselect("exchange", exchange_opts, default=exchange_opts)
     selected_base = st.selectbox("Base", ["Todos"] + base_opts)
     selected_quotes = st.multiselect("Quote", quote_opts, default=quote_opts)
     decimales = st.slider("Decimales a mostrar", min_value=2, max_value=6, value=4)
 
 # Filtrar por exchange, base y quote
-df = df[df["Exchange"].isin(selected_exchanges)]
+df = df[df["exchange"].isin(selected_exchanges)]
 if selected_base != "Todos":
     df = df[(df["base"] == selected_base) | (df["quote"] == selected_base)]
 if selected_quotes:
@@ -77,13 +77,13 @@ for pair, group in df.groupby("pair"):
     spreads_info.append({
         "pair": pair,
         "spread": spread,
-        "buy_exchange": best_ask_row["Exchange"],
+        "buy_exchange": best_ask_row["exchange"],
         "buy_price": best_ask_row["ask"],
         "buy_link": best_ask_row["link"],
-        "sell_exchange": best_bid_row["Exchange"],
+        "sell_exchange": best_bid_row["exchange"],
         "sell_price": best_bid_row["bid"],
         "sell_link": best_bid_row["link"],
-        "group": group_sorted[["Exchange", "bid", "ask", "link"]]
+        "group": group_sorted[["exchange", "bid", "ask", "link"]]
     })
 
 # ------------------------
@@ -128,14 +128,14 @@ else:
         """, unsafe_allow_html=True)
 
         display_df = s["group"].copy()
-        display_df.columns = ["Exchange", "Precio Venta (Bid)", "Precio Compra (Ask)", "Link"]
+        display_df.columns = ["exchange", "Precio Venta (Bid)", "Precio Compra (Ask)", "Link"]
 
         # Formatear precios con decimales
         display_df["Precio Venta (Bid)"] = display_df["Precio Venta (Bid)"].apply(lambda x: f"<span style='color:#006400; font-weight:bold'>{x:.{decimales}f}</span>")
         display_df["Precio Compra (Ask)"] = display_df["Precio Compra (Ask)"].apply(lambda x: f"<span style='color:#b30000; font-weight:bold'>{x:.{decimales}f}</span>")
 
-        # Convertir nombre de Exchange en un enlace
-        display_df["Exchange"] = display_df.apply(lambda row: f"<a href='{row['Link']}' target='_blank'>{row['Exchange']}</a>", axis=1)
+        # Convertir nombre de exchange en un enlace
+        display_df["exchange"] = display_df.apply(lambda row: f"<a href='{row['Link']}' target='_blank'>{row['exchange']}</a>", axis=1)
         display_df = display_df.drop(columns=["Link"])
 
         # Mostrar tabla alineada con botones
