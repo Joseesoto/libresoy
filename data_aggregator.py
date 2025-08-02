@@ -1,5 +1,5 @@
 import pandas as pd
-from sources import binance, kucoin, bybit, bitget  # Asegúrate que estos módulos estén bien importados
+from exchanges import binance, kucoin, bybit, bitget  # Asegúrate que estos módulos estén bien importados
 
 def get_mock_data():
     required_cols = ["base", "quote", "bid", "ask", "exchange", "link"]
