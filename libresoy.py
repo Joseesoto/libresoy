@@ -11,9 +11,7 @@ st.markdown("<h2 style='text-align: center;'>LibreSoy - Tabla SPOT</h2>", unsafe
 df = get_mock_data()
 df.columns = df.columns.str.lower().str.strip()  # Normaliza columnas
 
-st.write("🔍 Verificando estructura del DataFrame...")
-st.write("Columnas:", df.columns.tolist())
-st.write("Número de filas:", len(df))
+
 
 if df.empty:
     st.error("❌ El DataFrame está vacío. Revisa los módulos de los exchanges.")
