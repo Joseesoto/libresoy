@@ -9,6 +9,21 @@ st.markdown("<h2 style='text-align: center;'>LibreSoy - Tabla SPOT</h2>", unsafe
 # Obtener y preparar datos
 # ------------------------
 df = get_mock_data()
+st.write("🔍 Verificando estructura del DataFrame...")
+st.write("Columnas:", df.columns.tolist())
+st.write("Número de filas:", len(df))
+
+if df.empty:
+    st.error("❌ El DataFrame está vacío. Revisa los módulos de los exchanges.")
+    st.stop()
+
+required_cols = {"base", "quote", "bid", "ask", "exchange", "link"}
+missing = required_cols - set(df.columns)
+
+if missing:
+    st.error(f"❌ Faltan columnas: {', '.join(missing)}")
+    st.stop()
+
 # Validar columnas antes de crear 'pair'
 required_cols = {"base", "quote"}
 missing = required_cols - set(df.columns)
