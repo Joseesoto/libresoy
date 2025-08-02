@@ -9,6 +9,16 @@ st.markdown("<h2 style='text-align: center;'>LibreSoy - Tabla SPOT</h2>", unsafe
 # Obtener y preparar datos
 # ------------------------
 df = get_mock_data()
+# Validar columnas antes de crear 'pair'
+required_cols = {"base", "quote"}
+missing = required_cols - set(df.columns)
+
+if not missing:
+    df["pair"] = df["base"] + "/" + df["quote"]
+else:
+    st.error(f"❌ Faltan las columnas necesarias: {', '.join(missing)}. Revisa la función get_mock_data().")
+    st.stop()
+
 df["pair"] = df["base"] + "/" + df["quote"]
 
 # ------------------------
