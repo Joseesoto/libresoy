@@ -132,3 +132,5 @@ else:
             """,
             unsafe_allow_html=True
         )
+st.write("✅ Datos cargados:")
+st.dataframe(df)
