@@ -3,7 +3,7 @@ import pandas as pd
 from data_aggregator import get_mock_data
 
 st.set_page_config(layout="wide")
-st.markdown("<h2 style='text-align: center;'>LibreSoy - Tabla SPOT</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>LibreSoy v4- Tabla SPOT</h2>", unsafe_allow_html=True)
 
 # ------------------------
 # Obtener y preparar datos
