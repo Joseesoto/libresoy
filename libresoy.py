@@ -156,7 +156,7 @@ else:
 
         st.markdown(
             f"""
-            <div style='margin-top:10px; max-width: 900px;'>
+            <div style='margin-top:10px; width: 100%; overflow-x: auto;'>
                 {display_df.to_html(escape=False, index=False, classes="dataframe table table-striped", border=0)}
             </div>
             </div>
