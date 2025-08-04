@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def get_data():
+def get_all_data
     pairs = [("BTC", "USDT"), ("ETH", "USDT"), ("SOL", "USDT"), ("XRP", "USDT"), ("ADA", "USDT"), ("XRP", "BTC")]
     data = []
     for base, quote in pairs:
