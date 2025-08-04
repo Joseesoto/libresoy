@@ -1,32 +1,38 @@
 import pandas as pd
-from Exchanges.binance_spot import fetch_binance
-from Exchanges.kucoin_spot import fetch_kucoin
-from Exchanges.bybit_spot import fetch_bybit
-from Exchanges.bitget_spot import fetch_bitget
+from exchanges import binance, kucoin, bybit, bitget  # Asegúrate que estos módulos estén bien importados
 
-def get_all_data():
-    all_data = []
+def get_mock_data():
+    required_cols = ["base", "quote", "bid", "ask", "exchange", "link"]
 
     sources = {
-        "Binance": fetch_binance,
-        "KuCoin": fetch_kucoin,
-        "Bybit": fetch_bybit,
-        "Bitget": fetch_bitget
+        "Binance": binance.get_data,
+        "KuCoin": kucoin.get_data,
+        "Bybit": bybit.get_data,
+        "Bitget": bitget.get_data
     }
 
-    for name, func in sources.items():
+    valid_dfs = []
+
+    for name, get_data_func in sources.items():
+        print(f"\n🔍 Procesando {name}")
         try:
-            df = func()
-            if df is not None and not df.empty and all(col in df.columns for col in ["base", "quote", "bid", "ask", "exchange", "link"]):
-                all_data.append(df)
+            df = get_data_func()
+            if isinstance(df, pd.DataFrame):
+                df.columns = df.columns.str.lower().str.strip()  # Normaliza nombres
+                missing = set(required_cols) - set(df.columns)
+                if not missing:
+                    print(f"✅ {name}: columnas válidas ({len(df)} filas)")
+                    valid_dfs.append(df)
+                else:
+                    print(f"⚠️ {name} omitido: columnas faltantes {missing}")
             else:
-                print(f"⚠️ {name}: DataFrame inválido o columnas incompletas.")
+                print(f"❌ {name} no devolvió un DataFrame válido")
         except Exception as e:
-            print(f"❌ Error al obtener datos de {name}: {e}")
+            print(f"💥 Error en {name}: {e}")
 
-    if not all_data:
-        return pd.DataFrame(columns=["base", "quote", "bid", "ask", "exchange", "link"])
+    if not valid_dfs:
+        print("\n🚫 Ningún módulo pasó la validación")
+        return pd.DataFrame(columns=required_cols)
 
-    combined = pd.concat(all_data, ignore_index=True)
-    combined = combined[(combined["bid"] > 0) & (combined["ask"] > 0)]
-    return combined
+    print(f"\n📊 Total de filas combinadas: {sum(len(df) for df in valid_dfs)}")
+    return pd.concat(valid_dfs, ignore_index=True)
