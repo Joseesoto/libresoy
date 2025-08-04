@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 def get_data:
-    pairs = [("BTC", "USDT"), ("ETH", "USDT"), ("SOL", "USDT"), ("ADA", "USDT")]
+    pairs = [("BTC", "USDT"), ("ETH", "USDT"), ("SOL", "USDT"), ("ADA", "USDT"),("COP","USDT")]
     data = []
     for base, quote in pairs:
         bid = round(np.random.uniform(100, 30000), 2)
