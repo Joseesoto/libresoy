@@ -56,11 +56,6 @@ st.markdown("""
             border-collapse: collapse;
             font-size: 14px;
         }
-        th {
-            background-color: #eaeaea;
-            text-align: center;
-            padding: 8px;
-        }
         td {
             text-align: center;
             padding: 8px;
@@ -180,6 +175,10 @@ else:
         )
         display_df = display_df.drop(columns=["link"])
 
+        # Centrar títulos manualmente
+        html_table = display_df.to_html(escape=False, index=False, border=0)
+        html_table = html_table.replace("<th>", "<th style='text-align:center'>")
+
         st.markdown(f"""
             <div class="panel">
                 <div class="title">Par: {s["pair"]}</div>
@@ -189,7 +188,7 @@ else:
                     <div class="btn sell">🔴 ASK: {s["buy_exchange"]} @ {s["buy_price"]:.{decimales}f}</div>
                 </div>
                 <div class="table-wrapper">
-                    {display_df.to_html(escape=False, index=False, border=0)}
+                    {html_table}
                 </div>
             </div>
         """, unsafe_allow_html=True)
