@@ -3,7 +3,72 @@ import pandas as pd
 from data_aggregator import get_mock_data
 
 st.set_page_config(layout="wide")
-st.markdown("<h2 style='text-align: center;'>LibreSoy v4- Tabla SPOT</h2>", unsafe_allow_html=True)
+st.markdown("""
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+        }
+        .panel {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 12px;
+            max-width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .spread {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 16px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+        }
+        .buy { background-color: #006400; }
+        .sell { background-color: #b30000; }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th {
+            background-color: #eaeaea;
+            text-align: left;
+            padding: 8px;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("<h2 style='text-align: center;'>LibreSoy v5- Tabla SPOT</h2>", unsafe_allow_html=True)
 
 # ------------------------
 # Obtener y preparar datos
@@ -93,7 +158,6 @@ if spreads_info:
 # Mostrar resultados
 # ------------------------
 st.markdown("### Resultados:")
-modo_compacto = st.toggle("Modo compacto", value=False)
 
 if not spreads_info:
     st.warning("No hay resultados que cumplan con los filtros seleccionados.")
@@ -118,21 +182,19 @@ else:
         display_df = display_df.drop(columns=["link"])
 
         st.markdown(f"""
-            <div style='background-color:#f9f9f9; padding:12px; margin-top:20px; border-radius:10px; max-width:900px; margin-left:auto; margin-right:auto;'>
-                <div style='text-align:center; font-size:20px; font-weight:bold;'>Par: {s["pair"]}</div>
-                <div style='text-align:center; font-size:16px; font-weight:600; color:#007bff; margin-top:8px;'>
-                    Spread: {s["spread"]:.2f}%
-                </div>
-                <div style='margin-top:10px; display: flex; gap: 12px; flex-wrap: wrap; justify-content:center; align-items:center;'>
-                    <a href="{s["buy_link"]}" target="_blank" style='color:white; background-color:#006400; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
+            <div class="panel">
+                <div class="title">Par: {s["pair"]}</div>
+                <div class="spread">Spread: {s["spread"]:.2f}%</div>
+                <div class="buttons">
+                    <a href="{s["buy_link"]}" target="_blank" class="btn buy">
                         🟢 Comprar en {s["buy_exchange"]} @ {s["buy_price"]:.{decimales}f}
                     </a>
-                    <a href="{s["sell_link"]}" target="_blank" style='color:white; background-color:#b30000; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
+                    <a href="{s["sell_link"]}" target="_blank" class="btn sell">
                         🔴 Vender en {s["sell_exchange"]} @ {s["sell_price"]:.{decimales}f}
                     </a>
                 </div>
-                <div style='margin-top:10px; width: 100%; overflow-x: auto;'>
-                    {display_df.to_html(escape=False, index=False, classes="dataframe table table-striped", border=0)}
+                <div class="table-wrapper">
+                    {display_df.to_html(escape=False, index=False, border=0)}
                 </div>
             </div>
         """, unsafe_allow_html=True)
