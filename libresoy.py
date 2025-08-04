@@ -3,7 +3,7 @@ import pandas as pd
 from data_aggregator import get_mock_data
 
 st.set_page_config(layout="wide")
-st.markdown("<h2 style='text-align: center;'>LibreSoy V3- Tabla SPOT</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>LibreSoy - Tabla SPOT</h2>", unsafe_allow_html=True)
 
 # ------------------------
 # Obtener y preparar datos
@@ -99,26 +99,6 @@ if not spreads_info:
     st.warning("No hay resultados que cumplan con los filtros seleccionados.")
 else:
     for s in spreads_info:
-        st.markdown(f"""
-            <div style='background-color:#f9f9f9; padding:12px; margin-top:20px; border-radius:10px;'>
-                <div style='text-align:center; font-size:20px; font-weight:bold;'>Par: {s["pair"]}</div>
-                <div style='text-align:center; font-size:16px; font-weight:600; color:#007bff; margin-top:8px;'>
-                    Spread: {s["spread"]:.2f}%
-                </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown(f"""
-            <div style='margin-top:10px; display: flex; gap: 12px; flex-wrap: wrap; justify-content:center; align-items:center;'>
-                <a href="{s["buy_link"]}" target="_blank" style='color:white; background-color:#006400; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
-                    🟢 Comprar en {s["buy_exchange"]} @ {s["buy_price"]:.{decimales}f}
-                </a>
-                <a href="{s["sell_link"]}" target="_blank" style='color:white; background-color:#b30000; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
-                    🔴 Vender en {s["sell_exchange"]} @ {s["sell_price"]:.{decimales}f}
-                </a>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Tabla alineada justo debajo
         best_ask = s["group"]["ask"].min()
         best_bid = s["group"]["bid"].max()
 
@@ -137,15 +117,25 @@ else:
         )
         display_df = display_df.drop(columns=["link"])
 
-        st.markdown(
-            f"""
-            <div style='margin-top:10px; width: 100%; overflow-x: auto;'>
-                {display_df.to_html(escape=False, index=False, classes="dataframe table table-striped", border=0)}
+        st.markdown(f"""
+            <div style='background-color:#f9f9f9; padding:12px; margin-top:20px; border-radius:10px; max-width:900px; margin-left:auto; margin-right:auto;'>
+                <div style='text-align:center; font-size:20px; font-weight:bold;'>Par: {s["pair"]}</div>
+                <div style='text-align:center; font-size:16px; font-weight:600; color:#007bff; margin-top:8px;'>
+                    Spread: {s["spread"]:.2f}%
+                </div>
+                <div style='margin-top:10px; display: flex; gap: 12px; flex-wrap: wrap; justify-content:center; align-items:center;'>
+                    <a href="{s["buy_link"]}" target="_blank" style='color:white; background-color:#006400; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
+                        🟢 Comprar en {s["buy_exchange"]} @ {s["buy_price"]:.{decimales}f}
+                    </a>
+                    <a href="{s["sell_link"]}" target="_blank" style='color:white; background-color:#b30000; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
+                        🔴 Vender en {s["sell_exchange"]} @ {s["sell_price"]:.{decimales}f}
+                    </a>
+                </div>
+                <div style='margin-top:10px; width: 100%; overflow-x: auto;'>
+                    {display_df.to_html(escape=False, index=False, classes="dataframe table table-striped", border=0)}
+                </div>
             </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        """, unsafe_allow_html=True)
 
 # ------------------------
 # Mostrar tabla completa (hasta 200 filas)
