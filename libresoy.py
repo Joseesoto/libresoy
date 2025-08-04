@@ -3,13 +3,13 @@ import pandas as pd
 from data_aggregator import get_mock_data
 
 st.set_page_config(layout="wide")
-st.markdown("<h2 style='text-align: center;'>LibreSoy - Tabla SPOT</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>LibreSoy V3- Tabla SPOT</h2>", unsafe_allow_html=True)
 
 # ------------------------
 # Obtener y preparar datos
 # ------------------------
 df = get_mock_data()
-df.columns = df.columns.str.lower().str.strip()  # Normaliza columnas
+df.columns = df.columns.str.lower().str.strip()
 
 if df.empty:
     st.error("❌ El DataFrame está vacío. Revisa los módulos de los exchanges.")
@@ -101,41 +101,24 @@ else:
     for s in spreads_info:
         st.markdown(f"""
             <div style='background-color:#f9f9f9; padding:12px; margin-top:20px; border-radius:10px;'>
-                <div style='display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap;'>
-                    <span style='font-size:20px; font-weight:bold;'>Par: {s["pair"]}</span>
+                <div style='text-align:center; font-size:20px; font-weight:bold;'>Par: {s["pair"]}</div>
+                <div style='text-align:center; font-size:16px; font-weight:600; color:#007bff; margin-top:8px;'>
+                    Spread: {s["spread"]:.2f}%
                 </div>
         """, unsafe_allow_html=True)
 
-        if modo_compacto:
-            st.markdown(f"""
-                <div style='margin-top:10px; display: flex; flex-direction:column; gap:10px;'>
-                    <a href="{s["buy_link"]}" target="_blank" style='color:white; background-color:#006400; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
-                        🟢 Comprar en {s["buy_exchange"]} @ {s["buy_price"]:.{decimales}f}
-                    </a>
-                    <a href="{s["sell_link"]}" target="_blank" style='color:white; background-color:#b30000; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
-                        🔴 Vender en {s["sell_exchange"]} @ {s["sell_price"]:.{decimales}f}
-                    </a>
-                    <div style='text-align:center; font-size:16px; font-weight:600; color:#007bff;'>
-                        Spread: {s["spread"]:.2f}%
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-                <div style='margin-top:10px; display: flex; gap: 12px; flex-wrap: wrap; justify-content:space-between; align-items:center;'>
-                    <a href="{s["buy_link"]}" target="_blank" style='flex: 1; color:white; background-color:#006400; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
-                        🟢 Comprar en {s["buy_exchange"]} @ {s["buy_price"]:.{decimales}f}
-                    </a>
-                    <span style='font-size:16px; font-weight:600; color:#007bff; flex: 0 0 auto; margin-left:12px;'>
-                        Spread: {s["spread"]:.2f}%
-                    </span>
-                    <a href="{s["sell_link"]}" target="_blank" style='flex: 1; color:white; background-color:#b30000; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
-                        🔴 Vender en {s["sell_exchange"]} @ {s["sell_price"]:.{decimales}f}
-                    </a>
-                </div>
-            """, unsafe_allow_html=True)
+        st.markdown(f"""
+            <div style='margin-top:10px; display: flex; gap: 12px; flex-wrap: wrap; justify-content:center; align-items:center;'>
+                <a href="{s["buy_link"]}" target="_blank" style='color:white; background-color:#006400; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
+                    🟢 Comprar en {s["buy_exchange"]} @ {s["buy_price"]:.{decimales}f}
+                </a>
+                <a href="{s["sell_link"]}" target="_blank" style='color:white; background-color:#b30000; padding:8px 16px; border-radius:5px; text-align:center; text-decoration:none; font-weight:600;'>
+                    🔴 Vender en {s["sell_exchange"]} @ {s["sell_price"]:.{decimales}f}
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
 
-        # Tabla alineada justo debajo de los botones
+        # Tabla alineada justo debajo
         best_ask = s["group"]["ask"].min()
         best_bid = s["group"]["bid"].max()
 
