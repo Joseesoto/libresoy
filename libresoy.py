@@ -107,6 +107,12 @@ if selected_base != "Todos":
 if selected_quotes:
     df = df[df["quote"].isin(selected_quotes)]
 
+
+# Verificar si hay datos luego de filtrar
+if df.empty:
+    st.warning("⚠️ No hay datos que coincidan con los filtros seleccionados.")
+    st.stop()
+
 # ------------------------
 # Agrupar y calcular spreads
 # ------------------------
