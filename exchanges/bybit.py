@@ -1,45 +1,38 @@
 # exchanges/bybit.py
 
-import pandas as pd
 import requests
+import pandas as pd
 
 def get_data():
     try:
-        # Obtener lista de símbolos spot
-        symbols_url = "https://api.bybit.com/v5/market/instruments?category=spot"
-        symbols_resp = requests.get(symbols_url, timeout=10)
-        symbols = symbols_resp.json().get("result", {}).get("list", [])
+        url_info = "https://api.bybit.com/v5/market/instruments-info?category=spot"
+        url_prices = "https://api.bybit.com/v5/market/tickers?category=spot"
 
-        # Obtener precios de ticker
-        ticker_url = "https://api.bybit.com/v5/market/tickers?category=spot"
-        ticker_resp = requests.get(ticker_url, timeout=10)
-        tickers = ticker_resp.json().get("result", {}).get("list", [])
+        products = requests.get(url_info, timeout=10).json().get("result", {}).get("list", [])
+        tickers = requests.get(url_prices, timeout=10).json().get("result", {}).get("list", [])
 
-        # Filtrar tickers con precios válidos y construir DataFrame
+        activos = {item["symbol"]: item for item in products if item["status"] == "Trading"}
+
         data = []
-        ticker_map = {t['symbol']: t for t in tickers}
+        for ticker in tickers:
+            symbol = ticker.get("symbol", "")
+            if symbol in activos:
+                info = activos[symbol]
+                base = info["baseCoin"]
+                quote = info["quoteCoin"]
+                bid = ticker.get("bid1Price", "0")
+                ask = ticker.get("ask1Price", "0")
 
-        for s in symbols:
-            symbol = s.get("symbol")
-            base = s.get("baseCoin")
-            quote = s.get("quoteCoin")
-
-            t = ticker_map.get(symbol)
-            if not t:
-                continue
-
-            bid = float(t.get("bid1Price", 0))
-            ask = float(t.get("ask1Price", 0))
-
-            if bid > 0 and ask > 0:
-                data.append({
-                    "base": base,
-                    "quote": quote,
-                    "bid": bid,
-                    "ask": ask,
-                    "exchange": "Bybit",
-                    "link": f"https://www.bybit.com/en/trade/spot/{base}/{quote}"
-                })
+                if float(bid) > 0 and float(ask) > 0:
+                    link = f"https://www.bybit.com/trade/spot/{base}/{quote}"
+                    data.append({
+                        "base": base,
+                        "quote": quote,
+                        "bid": float(bid),
+                        "ask": float(ask),
+                        "exchange": "Bybit",
+                        "link": link
+                    })
 
         return pd.DataFrame(data)
 
